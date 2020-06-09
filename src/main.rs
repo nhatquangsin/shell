@@ -1,9 +1,11 @@
 mod command;
+mod split;
 
 use std::io::{stdin, stdout, Write};
 use std::process::{Child, Command, Stdio};
 
 use crate::command::process_cd;
+use crate::split::split_command;
 
 fn main() {
     loop {
@@ -17,11 +19,11 @@ fn main() {
         let mut pre_command = None;
 
         while let Some(command) = commands.next() {
-            let mut parts = command.trim().split_whitespace();
-            let command = parts.next().unwrap_or("");
+            let mut parts = split_command(command);
+            let command = parts.swap_remove(0);
             let args = parts;
 
-            match command {
+            match command.as_str() {
                 "cd" => {
                     process_cd(args);
                     pre_command = None;
